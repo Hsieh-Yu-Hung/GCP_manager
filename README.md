@@ -9,6 +9,8 @@ This is a small tool for downloading files or folders from Google cloud storage.
 
 ＊本地檔案不用寫絕對路徑, 可以指定的到就好
 
+＊請參考`example.py`裡面的用法
+
 1. 將 GCS_Manager.py 複製到專案資料夾中
 2. 導入 `GCS_Manager` 並指定 Bucket, 可以更換
 
