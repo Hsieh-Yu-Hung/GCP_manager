@@ -1,0 +1,177 @@
+--> 資料集資訊 <-- 
+  -Project Name: accuinbio-core 
+  -Region: asia-east1 
+  -資料集名稱: test_dataset 
+  -表格名稱: annotation_filtered_table 
+  -annotation_filtered_table 有 106 欄, 54680 列 
+--> End of this section 
+ 
+--> 資料清洗建議 <-- 
+[建議刪除] 欄位: DISTANCE , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: FLAGS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: HGNC_ID , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MANE , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MANE_SELECT , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MANE_PLUS_CLINICAL , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: TSL , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: APPRIS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: CCDS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: SWISSPROT , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: TREMBL , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: UNIPARC , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: UNIPROT_ISOFORM , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: REFSEQ_MATCH , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: REFSEQ_OFFSET , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: GENE_PHENO , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: DOMAINS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: miRNA , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADe_MID_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADe_REMAINING_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_AFR_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_AMI_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_AMR_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_ASJ_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_EAS_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_FIN_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_MID_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_NFE_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_REMAINING_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: gnomADg_SAS_AF , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MOTIF_NAME , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MOTIF_POS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: HIGH_INF_POS , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: MOTIF_SCORE_CHANGE , 因為: 無訊息比例 >= 100% 
+[建議刪除] 欄位: TRANSCRIPTION_FACTORS , 因為: 無訊息比例 >= 100% 
+[ 警 告 ] 欄位: Feature_type 中數值過單調, 有100.0% 的數值為Transcript 
+[ 警 告 ] 欄位: SYMBOL_SOURCE 中數值過單調, 有100.0% 的數值為EntrezGene 
+[ 警 告 ] 欄位: BIOTYPE 中數值過單調, 有100.0% 的數值為protein_coding 
+[ 警 告 ] 欄位: BAM_EDIT 中數值過單調, 有99.651% 的數值為- 
+[ 警 告 ] 欄位: HGVS_OFFSET 中數值過單調, 有91.898% 的數值為- 
+[ 警 告 ] 欄位: AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: AFR_AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: AMR_AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: EAS_AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: EUR_AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: SAS_AF 中數值過單調, 有97.423% 的數值為- 
+[ 警 告 ] 欄位: gnomAD_exomes_EAS_AC 中數值過單調, 有90.086% 的數值為- 
+[ 警 告 ] 欄位: gnomAD_exomes_EAS_AF 中數值過單調, 有90.086% 的數值為- 
+[ 警 告 ] 欄位: gnomAD_exomes_EAS_AN 中數值過單調, 有90.086% 的數值為- 
+[ 警 告 ] 欄位: gnomAD_exomes_EAS_nhomalt 中數值過單調, 有90.086% 的數值為- 
+ -- 沒有欄位是多種資料格式的問題 -- 
+--> End of this section 
+ 
+--> 資料剖析表 <-- 
+統整表格存檔為 annofiltered_data_profile.logs.xlsx
+--> End of this section 
+ 
+--> 欄位數值範例 <-- 
+ Column name = _Uploaded_variation : [np.int64(793), np.int64(795), np.int64(796), np.int64(797), np.int64(798)] 
+Column name = Location : ['10:43607540', '10:43607541', '10:43607542', '10:43607543', '10:43607547'] 
+Column name = Allele : ['-', 'A', 'AA', 'AAA', 'AAAA'] 
+Column name = Gene : ['10804', '1956', '2064', '2099', '238'] 
+Column name = Feature : ['NM_000038.6', 'NM_000059.4', 'NM_000125.4', 'NM_000222.3', 'NM_000441.2'] 
+Column name = Feature_type : ['Transcript'] 
+Column name = Consequence : ['3_prime_UTR_variant', '5_prime_UTR_variant', 'coding_sequence_variant', 'frameshift_variant', 'frameshift_variant,splice_region_variant'] 
+Column name = cDNA_position : ['-', '10', '100', '1000', '10000'] 
+Column name = CDS_position : ['-', '1', '10', '100', '100-101'] 
+Column name = Protein_position : ['-', '1', '1-?', '10', '10-11'] 
+Column name = Amino_acids : ['-', '*', '*/E', '*/R', '*/S'] 
+Column name = Codons : ['-', '-/A', '-/AA', '-/AAAAATGC', '-/AAAAGAATAGATAGTCTTCCTGGCCGGGCGCGTTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCGAGGCAGGTGGATCATGAGGTCAGGAGANNNNNNNNNNAAAAAAAAAAAAAAAAAAAA'] 
+Column name = Existing_variation : ['-', 'CD000073,CM077571', 'CD000243,COSV57345608', 'CD002492', 'CD003504'] 
+Column name = IMPACT : ['HIGH', 'LOW', 'MODERATE', 'MODIFIER'] 
+Column name = DISTANCE : ['-'] 
+Column name = STRAND : ['-1', '1'] 
+Column name = FLAGS : ['-'] 
+Column name = VARIANT_CLASS : ['SNV', 'deletion', 'indel', 'insertion', 'substitution'] 
+Column name = SYMBOL : ['ALK', 'APC', 'BRAF', 'BRCA1', 'BRCA2'] 
+Column name = SYMBOL_SOURCE : ['EntrezGene'] 
+Column name = HGNC_ID : ['-'] 
+Column name = BIOTYPE : ['protein_coding'] 
+Column name = CANONICAL : ['-', 'YES'] 
+Column name = MANE : ['-'] 
+Column name = MANE_SELECT : ['-'] 
+Column name = MANE_PLUS_CLINICAL : ['-'] 
+Column name = TSL : ['-'] 
+Column name = APPRIS : ['-'] 
+Column name = CCDS : ['-'] 
+Column name = ENSP : ['NP_000029.2', 'NP_000050.3', 'NP_000116.2', 'NP_000213.1', 'NP_000432.1'] 
+Column name = SWISSPROT : ['-'] 
+Column name = TREMBL : ['-'] 
+Column name = UNIPARC : ['-'] 
+Column name = UNIPROT_ISOFORM : ['-'] 
+Column name = REFSEQ_MATCH : ['-'] 
+Column name = REFSEQ_OFFSET : ['-'] 
+Column name = GIVEN_REF : ['-', 'A', 'AA', 'AAA', 'AAAA'] 
+Column name = USED_REF : ['-', 'A', 'AA', 'AAA', 'AAAA'] 
+Column name = BAM_EDIT : ['-', 'OK'] 
+Column name = GENE_PHENO : ['-'] 
+Column name = SIFT : ['-', 'deleterious(0)', 'deleterious(0.01)', 'deleterious(0.02)', 'deleterious(0.03)'] 
+Column name = PolyPhen : ['-', 'benign(0)', 'benign(0.001)', 'benign(0.003)', 'benign(0.005)'] 
+Column name = EXON : ['-', '1/16', '1/23', '1/27', '10-11/23'] 
+Column name = INTRON : ['-', '1-7/15', '1/15', '1/22', '1/26'] 
+Column name = DOMAINS : ['-'] 
+Column name = miRNA : ['-'] 
+Column name = HGVSc : ['-', 'NM_000038.6:c.*4_*7del', 'NM_000038.6:c.*6_*7del', 'NM_000038.6:c.*6_*7dup', 'NM_000038.6:c.-11G>C'] 
+Column name = HGVSp : ['-', 'NP_000029.2:p.Ala1002%3D', 'NP_000029.2:p.Ala1002Gly', 'NP_000029.2:p.Ala1002Ser', 'NP_000029.2:p.Ala1005%3D'] 
+Column name = HGVS_OFFSET : ['-', '1', '10', '1000', '11'] 
+Column name = AF : ['-', '0.0000', '0.0002', '0.0004', '0.0006'] 
+Column name = AFR_AF : ['-', '0', '0.0008', '0.0015', '0.0023'] 
+Column name = AMR_AF : ['-', '0', '0.0014', '0.0029', '0.0043'] 
+Column name = EAS_AF : ['-', '0', '0.001', '0.002', '0.003'] 
+Column name = EUR_AF : ['-', '0', '0.001', '0.002', '0.003'] 
+Column name = SAS_AF : ['-', '0', '0.001', '0.002', '0.0031'] 
+Column name = gnomADe_AF : ['-', '0', '0.0001005', '0.0001007', '0.0001017'] 
+Column name = gnomADe_AFR_AF : ['-', '0', '0.0001024', '0.000103', '0.000123'] 
+Column name = gnomADe_AMR_AF : ['-', '0', '0.0001002', '0.0001064', '0.0001122'] 
+Column name = gnomADe_ASJ_AF : ['-', '0', '0.0001', '0.0001001', '0.0001003'] 
+Column name = gnomADe_EAS_AF : ['-', '0', '0.0001087', '0.0001088', '0.0001089'] 
+Column name = gnomADe_FIN_AF : ['-', '0', '0.0001014', '0.0001047', '0.0001053'] 
+Column name = gnomADe_MID_AF : ['-'] 
+Column name = gnomADe_NFE_AF : ['-', '0', '0.000101', '0.0001014', '0.0001018'] 
+Column name = gnomADe_REMAINING_AF : ['-'] 
+Column name = gnomADe_SAS_AF : ['-', '0', '0.0001001', '0.0001004', '0.0001012'] 
+Column name = gnomADg_AF : ['-'] 
+Column name = gnomADg_AFR_AF : ['-'] 
+Column name = gnomADg_AMI_AF : ['-'] 
+Column name = gnomADg_AMR_AF : ['-'] 
+Column name = gnomADg_ASJ_AF : ['-'] 
+Column name = gnomADg_EAS_AF : ['-'] 
+Column name = gnomADg_FIN_AF : ['-'] 
+Column name = gnomADg_MID_AF : ['-'] 
+Column name = gnomADg_NFE_AF : ['-'] 
+Column name = gnomADg_REMAINING_AF : ['-'] 
+Column name = gnomADg_SAS_AF : ['-'] 
+Column name = MAX_AF : ['-', '0', '0.0001', '0.0001001', '0.0001002'] 
+Column name = MAX_AF_POPS : ['-', 'AFR', 'AMR', 'EAS', 'EAS,EUR'] 
+Column name = CLIN_SIG : ['-', 'affects', 'benign', 'benign,benign/likely_benign', 'benign,benign/likely_benign,conflicting_interpretations_of_pathogenicity,likely_benign'] 
+Column name = SOMATIC : ['-', '0,0,0,0,0,0,1', '0,0,0,0,0,0,1,1', '0,0,0,0,0,0,1,1,1', '0,0,0,0,0,1'] 
+Column name = PHENO : ['-', '0,1', '0,1,1', '0,1,1,1', '0,1,1,1,1'] 
+Column name = PUBMED : ['-', '10049754,7608256,11149622,19469690,22274720,25810047,16839264,30927507', '10070953', '10076558,25759805,10679286', '10090482'] 
+Column name = MOTIF_NAME : ['-'] 
+Column name = MOTIF_POS : ['-'] 
+Column name = HIGH_INF_POS : ['-'] 
+Column name = MOTIF_SCORE_CHANGE : ['-'] 
+Column name = TRANSCRIPTION_FACTORS : ['-'] 
+Column name = Ensembl_proteinid : ['-', 'ENSP00000241124,ENSP00000493834,ENSP00000348521,ENSP00000382938,ENSP00000495320,ENSP00000494468,ENSP00000382939,ENSP00000495841,ENSP00000494733,ENSP00000489698,ENSP00000493621', 'ENSP00000241124,ENSP00000493834,ENSP00000348521,ENSP00000382938,ENSP00000495320,ENSP00000494468,ENSP00000382939,ENSP00000495841,ENSP00000494733,ENSP00000489698,ENSP00000493621,ENSP00000494122', 'ENSP00000241124,ENSP00000493834,ENSP00000348521,ENSP00000382938,ENSP00000495320,ENSP00000494468,ENSP00000382939,ENSP00000495841,ENSP00000494733,ENSP00000489698,ENSP00000493621,ENSP00000494122,ENSP00000494720', 'ENSP00000241124,ENSP00000493834,ENSP00000348521,ENSP00000382938,ENSP00000495320,ENSP00000494468,ENSP00000382939,ENSP00000495841,ENSP00000494733,ENSP00000489698,ENSP00000493621,ENSP00000494122,ENSP00000494720,ENSP00000493512'] 
+Column name = Ensembl_transcriptid : ['-', 'ENST00000241124,ENST00000647029,ENST00000356192,ENST00000400065,ENST00000644283,ENST00000643121,ENST00000400066,ENST00000643211,ENST00000647243,ENST00000636852,ENST00000644667', 'ENST00000241124,ENST00000647029,ENST00000356192,ENST00000400065,ENST00000644283,ENST00000643121,ENST00000400066,ENST00000643211,ENST00000647243,ENST00000636852,ENST00000644667,ENST00000644236', 'ENST00000241124,ENST00000647029,ENST00000356192,ENST00000400065,ENST00000644283,ENST00000643121,ENST00000400066,ENST00000643211,ENST00000647243,ENST00000636852,ENST00000644667,ENST00000644236,ENST00000645654', 'ENST00000241124,ENST00000647029,ENST00000356192,ENST00000400065,ENST00000644283,ENST00000643121,ENST00000400066,ENST00000643211,ENST00000647243,ENST00000636852,ENST00000644667,ENST00000644236,ENST00000645654,ENST00000646108'] 
+Column name = FATHMM_converted_rankscore : ['-', '0.00513', '0.00526', '0.00528', '0.00529'] 
+Column name = FATHMM_pred : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = FATHMM_score : ['-', '-0.0,-0.0', '-0.0,-0.0,-0.0,-0.0', '-0.0,-0.0,-0.0,-0.0,.', '-0.01,-0.01'] 
+Column name = Polyphen2_HDIV_pred : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = Polyphen2_HDIV_rankscore : ['-', '0.02946', '0.07471', '0.09854', '0.11197'] 
+Column name = Polyphen2_HDIV_score : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = Polyphen2_HVAR_pred : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = Polyphen2_HVAR_rankscore : ['-', '0.01387', '0.04355', '0.06944', '0.08700'] 
+Column name = Polyphen2_HVAR_score : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = SIFT4G_converted_rankscore : ['-', '0.01155', '0.02320', '0.02331', '0.02342'] 
+Column name = SIFT4G_pred : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = SIFT4G_score : ['-', '.,.', '.,.,.', '.,.,.,.', '.,.,.,.,.'] 
+Column name = Uniprot_acc : ['-', '.,.', '.,P16234', 'A0A0K2YUJ3,Q9UM73,A0A087WZL3', 'A0A0K2YUJ3,Q9UM73,A0A087WZL3,H7BZ33'] 
+Column name = gnomAD_exomes_EAS_AC : ['-', '0', '1', '10', '1086'] 
+Column name = gnomAD_exomes_EAS_AF : ['-', '0.000000e+00', '1.023060e-01', '1.030860e-01', '1.033280e-03'] 
+Column name = gnomAD_exomes_EAS_AN : ['-', '10724', '10890', '12336', '12486'] 
+Column name = gnomAD_exomes_EAS_nhomalt : ['-', '0', '1', '104', '105'] 
+--> End of this section 
+
+ 
