@@ -4,7 +4,7 @@
 
 """
 
-from GCS_Manager import GCS_Manager
+from utility.GCS_Manager import GCS_Manager
 import os
 
 # Bucket name
