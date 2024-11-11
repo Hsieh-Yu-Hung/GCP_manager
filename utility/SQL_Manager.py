@@ -322,7 +322,6 @@ class SQL_Manager:
             try:
                 for statement in sql_script.split(sep):
                     if statement.strip():
-                        print(f"Executing: {statement.strip()}")  # 打印每個語句
                         connection.execute(text(statement))
                 transaction.commit()  # 提交交易
             except Exception as e:
