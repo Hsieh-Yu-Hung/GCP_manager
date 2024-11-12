@@ -16,10 +16,42 @@ This is a collection of class to handle GCP service functions.
 
 3. 可以使用模組裡面的功能
 
+## 更新
+- 2024-11-12 更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
+
 ## SQL-manager
 This is a small tool for connecting and updating database on Google cloud SQL.
 
 ### Usage
+
+＊ 帶有 `params` 的 `Execute_SQL_Query()` 範例, 取得查詢結果:
+
+   ```
+      # 擷取要搜尋的資訊
+      
+      # Query
+      sql = f"""
+        SELECT * FROM {sql_table_name}
+        WHERE "Chromosome" = :chrom 
+        AND "Position" = :pos 
+        AND "REF_MD5" = MD5(:ref)
+        AND "ALT_MD5" = MD5(:alt)
+      """
+      
+      # 建立參數字典
+      params = {
+        'chrom': str(row['CHROM'].replace('chr', '')),
+        'pos': str(row['POS']), 
+        'ref': str(row['REF']),
+        'alt': str(row['ALT'])
+      }
+      
+      res = sql_manager.Execute_SQL_Query(sql_statements=[sql], params=[params])
+      column_name = list(res.keys())
+      
+      # 取得查詢結果
+      result = res.fetchall()
+   ```
 
 1. 建立一個`SQL_Manager`並指定要操作的表格名稱
    ```
@@ -75,7 +107,8 @@ This is a small tool for connecting and updating database on Google cloud SQL.
       6. 執行 SQL 語句： 
           sql_manager.Execute_SQL_Query(
               sql_statements=SQL語句列表,
-              effected_trigger=被影響到的觸發器名稱列表
+              effected_trigger=被影響到的觸發器名稱列表,
+              params=要帶入sql語句的參數,以字典列表儲存
           )
       7. 比較 SQL 與新的資料差異並回報有差異的 ID： 
           added_ids, updated_ids, deleted_ids = sql_manager.Compare_Difference(
