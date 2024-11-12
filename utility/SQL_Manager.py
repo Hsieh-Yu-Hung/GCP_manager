@@ -219,35 +219,40 @@ class SQL_Manager:
             connection.execute(text(sql))
             transaction.commit()
 
-    def Execute_SQL_Query(self, sql_statements:list[str], effected_trigger:list[str]=[]):
+    def Execute_SQL_Query(self, sql_statements:list[str], effected_trigger:list[str]=[], params:list[dict]=[]):
 
-        print(f" --> [執行更新] 需要變動 {len(sql_statements)} 行")
+        if len(params) == 0:
+            print(f" --> [執行查詢] 需要執行 {len(sql_statements)} 行")
 
         # 關閉觸發器
         for each in effected_trigger:
             self.switch_trigger(each, False)
 
         """ 批量執行 SQL 更新語句 """
+        query = None
         with self.sql_engine.connect() as connection:
-            transaction = connection.begin()                # 開始交易    
+            transaction = connection.begin()  
             try:
                 for i, sql in enumerate(sql_statements):
-                    connection.execute(text(sql))           # 使用 text() 來包裝 SQL 字串
-                    # 每 10% 回報一次進度比例
-                    if len(sql_statements) > 0 and i % max(1, len(sql_statements) // 10) == 0:
-                        print(f" --> [執行進度] 已執行了 {i / len(sql_statements) * 100:.2f}%")
-                print(f" --> [執行進度] 已執行了 100%")
-                transaction.commit()                        # 提交交易
+                    if len(params) > 0:
+                        query = connection.execute(text(sql), params[i])
+                    else:
+                        query = connection.execute(text(sql))
+                transaction.commit()
                 
             # 如果發生錯誤，回滾交易
             except Exception as e:
                 transaction.rollback()  # 回滾交易
                 print(f"Error executing statement: {e}")
-        print(f" --> [更新變動] 變動了 {len(sql_statements)} 行")
+
+        if len(params) == 0:
+            print(f" --> [執行查詢] 已成功執行完成")
 
         # 開啟觸發器
         for each in effected_trigger:
             self.switch_trigger(each, True)
+        
+        return query
 
     def Insert_New_Data(self, added_ids:list, source_dataset:pd.DataFrame, column_of_id:str, effected_trigger:list[str]=[]):
         """ 插入新資料 """
