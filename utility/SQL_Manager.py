@@ -9,27 +9,7 @@ SQL_CONNECTION_NAME = 'accuinbio-core:asia-east1:db-1'
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='google.auth._default')
-
-import logging
-import os
 from datetime import datetime
-
-# 設定日誌 : 如果當天已經有日誌，則刪除
-log_file_path = f'Update_DB_Record_{datetime.now().strftime("%Y-%m-%d")}.logs'
-if os.path.exists(log_file_path): os.remove(log_file_path)
-logging.basicConfig(filename=log_file_path, level=logging.INFO)
-# 設定日誌格式
-class CustomFormatter(logging.Formatter):
-    def format(self, record):
-        # 設定日期時間格式為 YYYY-MM-DD HH:MM
-        self.datefmt = '%Y-%m-%d %H:%M'
-        return super().format(record)
-
-# 設定日誌格式
-formatter = CustomFormatter('%(asctime)s %(message)s')
-for handler in logging.getLogger().handlers:
-    handler.setFormatter(formatter)
-
 import pandas as pd
 from sqlalchemy import create_engine, text
 from google.cloud.sql.connector import Connector
@@ -91,7 +71,8 @@ class SQL_Manager:
             6. 執行 SQL 語句： 
                 sql_manager.Execute_SQL_Query(
                     sql_statements=SQL語句列表,
-                    effected_trigger=被影響到的觸發器名稱列表
+                    effected_trigger=被影響到的觸發器名稱列表,
+                    params=參數列表
                 )
             7. 比較 SQL 與新的資料差異並回報有差異的 ID： 
                 added_ids, updated_ids, deleted_ids = sql_manager.Compare_Difference(
@@ -135,6 +116,7 @@ class SQL_Manager:
         self.user_db = user_db
         self.sql_table_name = sql_table_name
         self.sql_connection_name = sql_connection_name
+        self._logfileName = ""
 
         # 嘗試建立 SQL 連線
         self.sql_engine = None
@@ -144,6 +126,20 @@ class SQL_Manager:
             user_password=self.user_password,
             user_db=self.user_db
         )
+
+    # logfileName 屬性
+    @property
+    def logfileName(self):
+        return self._logfileName
+    @logfileName.setter
+    def logfileName(self, value):
+        if value == "" or type(value) != str:
+            raise ValueError("logfileName must be a non-empty string!")
+        self._logfileName = value
+
+    def log_record(self, message:str):
+        with open(self.logfileName, 'a') as file:
+            file.write(f"{message}\n")
 
     def SQL_Connect(self, connection_name:str, user_name:str, user_password:str, user_db:str):
         """ 建立 SQL 連線 """
@@ -258,7 +254,7 @@ class SQL_Manager:
         """ 插入新資料 """
 
         print(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
-        logging.info(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
+        self.log_record(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
 
         # 選取需要插入的資料
         data_to_insert = source_dataset.loc[source_dataset[column_of_id].isin([str(id) for id in added_ids])]
@@ -283,7 +279,7 @@ class SQL_Manager:
         
         for i, each in enumerate(added_ids):
             # 紀錄插入進度
-            logging.info(f" --> [插入進度] 已經插入 ID: {each}")
+            self.log_record(f" --> [插入進度] 已經插入 ID: {each}")
 
             # 選取需要插入的資料
             selected_row = data_to_insert.loc[data_to_insert[column_of_id] == str(each)]
@@ -306,7 +302,7 @@ class SQL_Manager:
                 
 
         print(f" --> [插入新資料] 插入完成")
-        logging.info(f" --> [插入新資料] 插入完成")
+        self.log_record(f" --> [插入新資料] 插入完成")
         # 開啟觸發器
         for each in effected_trigger:
             self.switch_trigger(each, True)
@@ -338,7 +334,7 @@ class SQL_Manager:
         """ 比較現有資料和新的資料 """
 
         print(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
-        logging.info(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
+        self.log_record(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
 
         # 初始化記錄更新、新增、刪除的列表
         updated_ids = []
@@ -360,7 +356,7 @@ class SQL_Manager:
         if existing_data.empty:
             added_ids.extend(new_data[column_of_id].tolist())
             print(f" --> [首次更新] 新增了 {len(added_ids)} 行")
-            logging.info(f" --> [首次更新] 新增了 {len(added_ids)} 行")
+            self.log_record(f" --> [首次更新] 新增了 {len(added_ids)} 行")
         else:
 
             # 取得 ID 列表
@@ -395,11 +391,11 @@ class SQL_Manager:
             log_message = ""
             for each in added_ids:
                 log_message += f"\n--> [新增資料] uniq_identifier: {each}"
-            logging.info(f"{log_message}")
+            self.log_record(f"{log_message}")
         
         # 回報偵測結果
         print(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
-        logging.info(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
+        self.log_record(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
 
         # 回傳結果
         return added_ids, updated_ids, deleted_ids
@@ -426,7 +422,7 @@ class SQL_Manager:
             log_message = f" --> [更新資料] {target_id} 更新了, "
             for update in updated_columns:
                 log_message += f"{update.column_name} : {update.old_value} -> {update.new_value};"
-            logging.info(log_message)   
+            self.log_record(log_message)   
             return sql
 
         # 將 existing_data 和 new_data 的 ID column 轉換成 string
@@ -462,7 +458,7 @@ class SQL_Manager:
         for id_to_delete in deleted_ids:
             sql = f"DELETE FROM \"{self.sql_table_name}\" WHERE \"{column_of_id}\" = '{id_to_delete}';"
             sql_statements.append(sql)
-            logging.info(f" --> [刪除資料] 刪除了 {id_to_delete}")
+            self.log_record(f" --> [刪除資料] 刪除了 {id_to_delete}")
         return sql_statements
 
     def Update_Database(
@@ -496,11 +492,15 @@ class SQL_Manager:
         print(f"User Name: {self.user_name}")
         print(f"User Password: {self.user_password}")
         print(f"User DB: {self.user_db}")
+        if self.logfileName != "":
+            print(f"Log File: {self.logfileName}")
+        else:
+            print("Log File: None")
 
 if __name__ == "__main__":
 
     # 印出 SQL_Manager 的說明文件
-    help(SQL_Manager)
+    # help(SQL_Manager)
 
     # 測試 SQL_Manager
     sql_manager = SQL_Manager(sql_table_name="accurate_db")
