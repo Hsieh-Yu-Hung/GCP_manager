@@ -423,7 +423,7 @@ class SQL_Manager:
                 edit_message = edit_message.replace(":", "-")
 
             # 生成 SQL 語句
-            sql = f"UPDATE {table_name} SET {set_clause}, \"Modify_date\" = \'{datetime.now().strftime("%Y-%m-%d %H:%M")}\', \"Modify_record\" = \'{edit_message}\' WHERE \"{column_of_id}\" = \'{target_id}\';"
+            sql = f"UPDATE {table_name} SET {set_clause}, \"Modify_date\" = '{datetime.now().strftime('%Y-%m-%d %H:%M')}', \"Modify_record\" = '{edit_message}' WHERE \"{column_of_id}\" = '{target_id}';"
             
             # 回報更新資料 
             log_message = f" --> [更新資料] {target_id} 更新了, "
