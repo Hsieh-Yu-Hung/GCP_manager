@@ -233,11 +233,8 @@ class SQL_Manager:
         with self.sql_engine.connect() as connection:
             transaction = connection.begin()  
             try:
-                for i, sql in enumerate(sql_statements):
-                    if len(params) > 0:
-                        query = connection.execute(text(sql), params[i])
-                    else:
-                        query = connection.execute(text(sql))
+                for i, each in enumerate(sql_statements):
+                    query = connection.execute(text(each), params[i])
                 transaction.commit()
                 
             # 如果發生錯誤，回滾交易
@@ -405,34 +402,35 @@ class SQL_Manager:
         return added_ids, updated_ids, deleted_ids
 
     def Generate_Update_SQL_Statements(self, updated_ids, existing_data, new_data, column_of_id:str):
+        
+        print(f" --> [生成更新語句] 需要更新 {len(updated_ids)} 行")
 
         def Generate_Update_SQL(table_name, updated_columns, target_id):
             """ 生成 SQL 更新語句 """
+
             set_clauses = []
+            params = {}
             for update in updated_columns:
-                # 將 : 替換成 --
-                update.new_value = update.new_value.replace(":", "--")
                 # 使用雙引號包裹欄位名稱
-                set_clauses.append(f'"{update.column_name}" = \'{update.new_value}\'')
-            set_clause = ", ".join(set_clauses)
-            sql = f"UPDATE {table_name} SET {set_clause} WHERE \"{column_of_id}\" = '{target_id}';"
-            # 加入修改日期
-            sql += f'UPDATE {table_name} SET "Modify_date" = \'{datetime.now().strftime("%Y-%m-%d %H:%M")}\' WHERE "{column_of_id}" = \'{target_id}\';'
-            # 加入修改原因
-            edit_message = f"已更新:"
-            for update in updated_columns:
-                # 將 : 替換成 --
-                update.new_value = update.new_value.replace(":", "--")
-                edit_message += f"\n{update.column_name};"
-                # edit_message += f"\n{update.column_name} -- {update.old_value} -> {update.new_value};"
-            sql += f'UPDATE {table_name} SET "Modify_record" = \'{edit_message}\' WHERE "{column_of_id}" = \'{target_id}\';'
+                set_clauses.append(f'"{update.column_name}" = :{update.column_name.lower()}')
+                params[update.column_name.lower()] = update.new_value
             
-            # 回報更新資料
+            set_clause = ", ".join(set_clauses)
+            # 加入修改原因
+            edit_message = f"已更新>"
+            for update in updated_columns:
+                edit_message += f"Edited - {update.column_name} - {update.old_value} -> {update.new_value};"
+                edit_message = edit_message.replace(":", "-")
+
+            # 生成 SQL 語句
+            sql = f"UPDATE {table_name} SET {set_clause}, \"Modify_date\" = \'{datetime.now().strftime("%Y-%m-%d %H:%M")}\', \"Modify_record\" = \'{edit_message}\' WHERE \"{column_of_id}\" = \'{target_id}\';"
+            
+            # 回報更新資料 
             log_message = f" --> [更新資料] {target_id} 更新了, "
             for update in updated_columns:
                 log_message += f"{update.column_name} : {update.old_value} -> {update.new_value};"
             logging.info(log_message)   
-            return sql
+            return sql, params
 
         # 將 existing_data 和 new_data 的 ID column 轉換成 string
         existing_data[column_of_id] = existing_data[column_of_id].astype(str)
@@ -440,6 +438,7 @@ class SQL_Manager:
 
         # 生成更新語句
         sql_statements = []
+        params_list = []
         for each in updated_ids:
             old_data = existing_data.loc[existing_data[column_of_id] == str(each)]
             t_new_data = new_data.loc[new_data[column_of_id] == str(each)]
@@ -457,9 +456,11 @@ class SQL_Manager:
             
             # 如果不同的欄位存在，則生成更新語句
             if different_columns:
-                sql_statements.append(Generate_Update_SQL(self.sql_table_name, different_columns, each))
+                sql, params = Generate_Update_SQL(self.sql_table_name, different_columns, each)
+                sql_statements.append(sql)
+                params_list.append(params)
 
-        return sql_statements
+        return sql_statements, params_list
 
     def Generate_Delete_SQL_Statements(self, deleted_ids, column_of_id:str):
         # 生成刪除語句
@@ -481,14 +482,14 @@ class SQL_Manager:
         added_ids, updated_ids, deleted_ids = self.Compare_Difference(new_data, existing_data, column_of_id, preserved_data)
 
         # 生成更新語句
-        update_sql_statements = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id)
+        update_sql_statements, params_list = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id)
 
         # 生成刪除語句
         delete_sql_statements = self.Generate_Delete_SQL_Statements(deleted_ids, column_of_id)
 
         # 綜合所有語句並執行
         all_sql_statements = update_sql_statements + delete_sql_statements
-        self.Execute_SQL_Query(all_sql_statements, effected_trigger=effected_trigger)
+        self.Execute_SQL_Query(all_sql_statements, effected_trigger=effected_trigger, params=params_list)
 
         # 插入新資料, 加入修改資訊
         for each in edit_record:
