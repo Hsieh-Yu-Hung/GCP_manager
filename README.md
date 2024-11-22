@@ -1,15 +1,15 @@
-# GCP-manager
+# GCP_manager
 This is a collection of class to handle GCP service functions.
 
 ## Usage
 
 ＊注意要先取得權限並登入！ 使用 `gcloud auth login`, 容器中使用請參考[這篇](https://github.com/ACCUiNBio/BioDB#container%E4%B8%AD%E7%9A%84%E8%BA%AB%E4%BB%BD%E9%A9%97%E8%AD%89)
 
-1. 下載 `GCP-manager` 資料夾, 夾他加入到你的專案中
+1. 下載 `GCP_manager` 資料夾, 夾他加入到你的專案中
 
    ```
       git clone git@github.com:Hsieh-Yu-Hung/GCP-manager.git
-      mv GCP-manager /path/to/your-project/
+      mv GCP_manager /path/to/your-project/
    ```
 
 2. 導入模組
@@ -23,9 +23,56 @@ This is a collection of class to handle GCP service functions.
 3. 可以使用模組裡面的功能
 
 ## 更新
+- 2024-11-22 更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程 
 - 2024-11-12 更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
 
-## SQL-manager
+## CRL_Manager
+
+＊ 注意使用的 docker image 要確定能夠運行外部輸入的 shell script!
+
+＊ 先測試好, build ＆ push docker image, 才能套用這個 manager!
+
+### Usage
+
+- 搭配以下 `ExecuteProgram.py` 使用, 可以輸入 shell script 和 configure 檔案 (json)
+
+- 通常是在送 JOB 平台中執行這個 manager, 不會單獨使用。 [說明]()
+
+- 執行 Cloud Job routing 流程：
+
+   1. 下載檔案到 Container 中
+   2. 執行 shell script 和 additional tasks
+   3. 上傳分析結果到 GCS
+
+- `ExecuteProgram.py` 內容如下：
+
+```
+from utility.CRL_Manager import CRL_Manager
+import os
+import base64
+
+# 設置環境變量
+CONFIGS = os.environ.get("CONFIGS")
+SH_SCRIPT = os.environ.get("SH_SCRIPT")
+
+def Decode_Env_Var(env_var):
+    if env_var:
+        decoded_content = base64.b64decode(env_var).decode('utf-8')
+    else:
+        print(f"環境變數未設置")
+        exit(1)
+    return decoded_content
+
+config_content = Decode_Env_Var(CONFIGS)
+script_content = Decode_Env_Var(SH_SCRIPT)
+
+if __name__ == "__main__":
+    """ 主流程 """
+    crl_manager = CRL_Manager(config_content, script_content)
+    crl_manager.process_data()
+```
+
+## SQL_Manager
 This is a small tool for connecting and updating database on Google cloud SQL.
 
 ### Usage
@@ -134,7 +181,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
           )
    ```
 
-## GCS-manager
+## GCS_Manager
 This is a small tool for downloading files or folders from Google cloud storage.
 
 ### Usage
