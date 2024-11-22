@@ -9,27 +9,7 @@ SQL_CONNECTION_NAME = 'accuinbio-core:asia-east1:db-1'
 
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module='google.auth._default')
-
-import logging
-import os
 from datetime import datetime
-
-# 設定日誌 : 如果當天已經有日誌，則刪除
-log_file_path = f'Update_DB_Record_{datetime.now().strftime("%Y-%m-%d")}.logs'
-if os.path.exists(log_file_path): os.remove(log_file_path)
-logging.basicConfig(filename=log_file_path, level=logging.INFO)
-# 設定日誌格式
-class CustomFormatter(logging.Formatter):
-    def format(self, record):
-        # 設定日期時間格式為 YYYY-MM-DD HH:MM
-        self.datefmt = '%Y-%m-%d %H:%M'
-        return super().format(record)
-
-# 設定日誌格式
-formatter = CustomFormatter('%(asctime)s %(message)s')
-for handler in logging.getLogger().handlers:
-    handler.setFormatter(formatter)
-
 import pandas as pd
 from sqlalchemy import create_engine, text
 from google.cloud.sql.connector import Connector
@@ -91,7 +71,8 @@ class SQL_Manager:
             6. 執行 SQL 語句： 
                 sql_manager.Execute_SQL_Query(
                     sql_statements=SQL語句列表,
-                    effected_trigger=被影響到的觸發器名稱列表
+                    effected_trigger=被影響到的觸發器名稱列表,
+                    params=參數列表
                 )
             7. 比較 SQL 與新的資料差異並回報有差異的 ID： 
                 added_ids, updated_ids, deleted_ids = sql_manager.Compare_Difference(
@@ -135,6 +116,7 @@ class SQL_Manager:
         self.user_db = user_db
         self.sql_table_name = sql_table_name
         self.sql_connection_name = sql_connection_name
+        self._logfileName = ""
 
         # 嘗試建立 SQL 連線
         self.sql_engine = None
@@ -144,6 +126,20 @@ class SQL_Manager:
             user_password=self.user_password,
             user_db=self.user_db
         )
+
+    # logfileName 屬性
+    @property
+    def logfileName(self):
+        return self._logfileName
+    @logfileName.setter
+    def logfileName(self, value):
+        if value == "" or type(value) != str:
+            raise ValueError("logfileName must be a non-empty string!")
+        self._logfileName = value
+
+    def log_record(self, message:str):
+        with open(self.logfileName, 'a') as file:
+            file.write(f"{message}\n")
 
     def SQL_Connect(self, connection_name:str, user_name:str, user_password:str, user_db:str):
         """ 建立 SQL 連線 """
@@ -233,8 +229,11 @@ class SQL_Manager:
         with self.sql_engine.connect() as connection:
             transaction = connection.begin()  
             try:
-                for i, each in enumerate(sql_statements):
-                    query = connection.execute(text(each), params[i])
+                for i, sql in enumerate(sql_statements):
+                    if len(params) > 0:
+                        query = connection.execute(text(sql), params[i])
+                    else:
+                        query = connection.execute(text(sql))
                 transaction.commit()
                 
             # 如果發生錯誤，回滾交易
@@ -255,7 +254,7 @@ class SQL_Manager:
         """ 插入新資料 """
 
         print(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
-        logging.info(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
+        self.log_record(f" --> [插入新資料] 需要插入 {len(added_ids)} 行")
 
         # 選取需要插入的資料
         data_to_insert = source_dataset.loc[source_dataset[column_of_id].isin([str(id) for id in added_ids])]
@@ -280,7 +279,7 @@ class SQL_Manager:
         
         for i, each in enumerate(added_ids):
             # 紀錄插入進度
-            logging.info(f" --> [插入進度] 已經插入 ID: {each}")
+            self.log_record(f" --> [插入進度] 已經插入 ID: {each}")
 
             # 選取需要插入的資料
             selected_row = data_to_insert.loc[data_to_insert[column_of_id] == str(each)]
@@ -303,7 +302,7 @@ class SQL_Manager:
                 
 
         print(f" --> [插入新資料] 插入完成")
-        logging.info(f" --> [插入新資料] 插入完成")
+        self.log_record(f" --> [插入新資料] 插入完成")
         # 開啟觸發器
         for each in effected_trigger:
             self.switch_trigger(each, True)
@@ -335,7 +334,7 @@ class SQL_Manager:
         """ 比較現有資料和新的資料 """
 
         print(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
-        logging.info(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
+        self.log_record(f" --> [開始偵測] 現有資料有 {existing_data.shape[0]} 行, 新的資料有 {new_data.shape[0]} 行")
 
         # 初始化記錄更新、新增、刪除的列表
         updated_ids = []
@@ -357,7 +356,7 @@ class SQL_Manager:
         if existing_data.empty:
             added_ids.extend(new_data[column_of_id].tolist())
             print(f" --> [首次更新] 新增了 {len(added_ids)} 行")
-            logging.info(f" --> [首次更新] 新增了 {len(added_ids)} 行")
+            self.log_record(f" --> [首次更新] 新增了 {len(added_ids)} 行")
         else:
 
             # 取得 ID 列表
@@ -392,45 +391,39 @@ class SQL_Manager:
             log_message = ""
             for each in added_ids:
                 log_message += f"\n--> [新增資料] uniq_identifier: {each}"
-            logging.info(f"{log_message}")
+            self.log_record(f"{log_message}")
         
         # 回報偵測結果
         print(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
-        logging.info(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
+        self.log_record(f" --> [偵測完畢] 新增了 {len(added_ids)} 行, 更新了 {len(updated_ids)} 行, 刪除了 {len(deleted_ids)} 行")
 
         # 回傳結果
         return added_ids, updated_ids, deleted_ids
 
     def Generate_Update_SQL_Statements(self, updated_ids, existing_data, new_data, column_of_id:str):
-        
-        print(f" --> [生成更新語句] 需要更新 {len(updated_ids)} 行")
 
         def Generate_Update_SQL(table_name, updated_columns, target_id):
             """ 生成 SQL 更新語句 """
-
             set_clauses = []
-            params = {}
             for update in updated_columns:
                 # 使用雙引號包裹欄位名稱
-                set_clauses.append(f'"{update.column_name}" = :{update.column_name.lower()}')
-                params[update.column_name.lower()] = update.new_value
-            
+                set_clauses.append(f'"{update.column_name}" = \'{update.new_value}\'')
             set_clause = ", ".join(set_clauses)
+            sql = f"UPDATE {table_name} SET {set_clause} WHERE \"{column_of_id}\" = '{target_id}';"
+            # 加入修改日期
+            sql += f'UPDATE {table_name} SET "Modify_date" = \'{datetime.now().strftime("%Y-%m-%d %H:%M")}\' WHERE "{column_of_id}" = \'{target_id}\';'
             # 加入修改原因
-            edit_message = f"已更新>"
+            edit_message = f"已更新:"
             for update in updated_columns:
-                edit_message += f"Edited - {update.column_name} - {update.old_value} -> {update.new_value};"
-                edit_message = edit_message.replace(":", "-")
-
-            # 生成 SQL 語句
-            sql = f"UPDATE {table_name} SET {set_clause}, \"Modify_date\" = '{datetime.now().strftime('%Y-%m-%d %H:%M')}', \"Modify_record\" = '{edit_message}' WHERE \"{column_of_id}\" = '{target_id}';"
+                edit_message += f"\n{update.column_name} : {update.old_value} -> {update.new_value};"
+            sql += f'UPDATE {table_name} SET "Modify_record" = \'{edit_message}\' WHERE "{column_of_id}" = \'{target_id}\';'
             
-            # 回報更新資料 
+            # 回報更新資料
             log_message = f" --> [更新資料] {target_id} 更新了, "
             for update in updated_columns:
                 log_message += f"{update.column_name} : {update.old_value} -> {update.new_value};"
-            logging.info(log_message)   
-            return sql, params
+            self.log_record(log_message)   
+            return sql
 
         # 將 existing_data 和 new_data 的 ID column 轉換成 string
         existing_data[column_of_id] = existing_data[column_of_id].astype(str)
@@ -438,7 +431,6 @@ class SQL_Manager:
 
         # 生成更新語句
         sql_statements = []
-        params_list = []
         for each in updated_ids:
             old_data = existing_data.loc[existing_data[column_of_id] == str(each)]
             t_new_data = new_data.loc[new_data[column_of_id] == str(each)]
@@ -456,11 +448,9 @@ class SQL_Manager:
             
             # 如果不同的欄位存在，則生成更新語句
             if different_columns:
-                sql, params = Generate_Update_SQL(self.sql_table_name, different_columns, each)
-                sql_statements.append(sql)
-                params_list.append(params)
+                sql_statements.append(Generate_Update_SQL(self.sql_table_name, different_columns, each))
 
-        return sql_statements, params_list
+        return sql_statements
 
     def Generate_Delete_SQL_Statements(self, deleted_ids, column_of_id:str):
         # 生成刪除語句
@@ -468,7 +458,7 @@ class SQL_Manager:
         for id_to_delete in deleted_ids:
             sql = f"DELETE FROM \"{self.sql_table_name}\" WHERE \"{column_of_id}\" = '{id_to_delete}';"
             sql_statements.append(sql)
-            logging.info(f" --> [刪除資料] 刪除了 {id_to_delete}")
+            self.log_record(f" --> [刪除資料] 刪除了 {id_to_delete}")
         return sql_statements
 
     def Update_Database(
@@ -482,14 +472,14 @@ class SQL_Manager:
         added_ids, updated_ids, deleted_ids = self.Compare_Difference(new_data, existing_data, column_of_id, preserved_data)
 
         # 生成更新語句
-        update_sql_statements, params_list = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id)
+        update_sql_statements = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id)
 
         # 生成刪除語句
         delete_sql_statements = self.Generate_Delete_SQL_Statements(deleted_ids, column_of_id)
 
         # 綜合所有語句並執行
         all_sql_statements = update_sql_statements + delete_sql_statements
-        self.Execute_SQL_Query(all_sql_statements, effected_trigger=effected_trigger, params=params_list)
+        self.Execute_SQL_Query(all_sql_statements, effected_trigger=effected_trigger)
 
         # 插入新資料, 加入修改資訊
         for each in edit_record:
@@ -502,11 +492,15 @@ class SQL_Manager:
         print(f"User Name: {self.user_name}")
         print(f"User Password: {self.user_password}")
         print(f"User DB: {self.user_db}")
+        if self.logfileName != "":
+            print(f"Log File: {self.logfileName}")
+        else:
+            print("Log File: None")
 
 if __name__ == "__main__":
 
     # 印出 SQL_Manager 的說明文件
-    help(SQL_Manager)
+    # help(SQL_Manager)
 
     # 測試 SQL_Manager
     sql_manager = SQL_Manager(sql_table_name="accurate_db")
