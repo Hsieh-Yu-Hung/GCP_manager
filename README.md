@@ -5,13 +5,19 @@ This is a collection of class to handle GCP service functions.
 
 ＊注意要先取得權限並登入！ 使用 `gcloud auth login`, 容器中使用請參考[這篇](https://github.com/ACCUiNBio/BioDB#container%E4%B8%AD%E7%9A%84%E8%BA%AB%E4%BB%BD%E9%A9%97%E8%AD%89)
 
-1. 下載 `utility` 資料夾, 夾他加入到你的專案中
+1. 下載 `GCP-manager` 資料夾, 夾他加入到你的專案中
+
+   ```
+      git clone git@github.com:Hsieh-Yu-Hung/GCP-manager.git
+      mv GCP-manager /path/to/your-project/
+   ```
 
 2. 導入模組
 
    ```
-      from utility.SQL_Manager import SQL_Manager # SQL
-      from utility.GCS_Manager import GCS_Manager # GCS
+      from GCP_manager.SQL_Manager import SQL_Manager # SQL
+      from GCP_manager.GCS_Manager import GCS_Manager # GCS
+      from GCP_manager.CRL_Manager import CRL_Manager # Cloud Run
    ```
 
 3. 可以使用模組裡面的功能
