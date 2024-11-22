@@ -1,4 +1,4 @@
-from GCS_Manager import GCS_Manager
+from GCP_manager.GCS_Manager import GCS_Manager
 from dataclasses import dataclass
 from typing import List
 import json
