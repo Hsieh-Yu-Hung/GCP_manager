@@ -8,7 +8,7 @@ This is a collection of class to handle GCP service functions.
 1. 下載 `GCP_manager` 資料夾, 夾他加入到你的專案中
 
    ```
-      git clone git@github.com:Hsieh-Yu-Hung/GCP-manager.git
+      git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git
       mv GCP_manager /path/to/your-project/
    ```
 
