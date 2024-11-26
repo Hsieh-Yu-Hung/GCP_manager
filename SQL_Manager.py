@@ -141,6 +141,11 @@ class SQL_Manager:
         with open(self.logfileName, 'a') as file:
             file.write(f"{message}\n")
 
+    def params_checker(self, params, params_type, warning_message:str=""):
+        for each in params:
+            if type(each) != params_type:
+                raise ValueError(f"Type Error: {params} should be {params_type}! {warning_message}")
+
     def SQL_Connect(self, connection_name:str, user_name:str, user_password:str, user_db:str):
         """ 建立 SQL 連線 """
         # Handle connection
@@ -171,6 +176,10 @@ class SQL_Manager:
     def Fetch_SQL_Data(self, db_exclude_columns = [], to_preserve:list[PreserveObject] = []):
         """ 取得 SQL 資料 """
         print(f" --> 嘗試讀取 {self.sql_table_name} 資料表...")
+
+        # Check params
+        self.params_checker(db_exclude_columns, list, "若要指定排除欄位, db_exclude_columns 需要是 list[str]!")
+        self.params_checker(to_preserve, list, "若要指定保留資料, to_preserve 需要是 list[PreserveObject]!")
 
         try:    
             # 讀取現有的資料表
@@ -216,6 +225,11 @@ class SQL_Manager:
             transaction.commit()
 
     def Execute_SQL_Query(self, sql_statements:list[str], effected_trigger:list[str]=[], params:list[dict]=[]):
+
+        # Check params
+        self.params_checker(sql_statements, list, "輸入的 sql_statements 需要是列表形式 list[str]!")
+        self.params_checker(effected_trigger, list, "若要指定影響的觸發器, effected_trigger 需要是列表形式 list[str]!")
+        self.params_checker(params, list, "若要指定參數, params 需要是列表形式 list[dict]!", "參數會依照 sql_statements 的順序填入")
 
         if len(params) == 0:
             print(f" --> [執行查詢] 需要執行 {len(sql_statements)} 行")
@@ -308,6 +322,10 @@ class SQL_Manager:
             self.switch_trigger(each, True)
 
     def Execute_SQL_Script(self, sql_script:str, substitute_objects:list[SubstituteObject]=[], sep=';'):
+
+        # Check params
+        self.params_checker(sql_script, str, "輸入的 sql_script 需要是字串形式 str!")
+        self.params_checker(substitute_objects, list, "若要指定替換物件, substitute_objects 需要是列表形式 list[SubstituteObject]!")
 
         # 讀取 SQL 檔案
         with open(sql_script, 'r') as file:
