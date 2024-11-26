@@ -7,12 +7,11 @@ This is a collection of class to handle GCP service functions.
 
 1. 下載 `GCP_manager` 資料夾, 夾他加入到你的專案中
 
-   ```
-      git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git
-      mv GCP_manager /path/to/your-project/
-   ```
+   ```git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git```
 
-2. 導入模組
+   ```mv GCP_manager /path/to/your-project/```
+
+3. 導入模組
 
    ```
       from GCP_manager.SQL_Manager import SQL_Manager # SQL
@@ -20,9 +19,11 @@ This is a collection of class to handle GCP service functions.
       from GCP_manager.CRL_Manager import CRL_Manager # Cloud Run
    ```
 
-3. 可以使用模組裡面的功能
+4. 可以使用模組裡面的功能
 
 ## 更新
+- 2024-11-26 更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
+- 2024-11-26 更新 `CRL_Manager.Update_Database()` 現在會輸出新增的資料為 Excel 並上傳 GCS
 - 2024-11-22 更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程 
 - 2024-11-12 更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
 
