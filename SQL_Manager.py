@@ -117,6 +117,7 @@ class SQL_Manager:
         self.sql_table_name = sql_table_name
         self.sql_connection_name = sql_connection_name
         self._logfileName = ""
+        self._new_data_added_excel = ""
 
         # 嘗試建立 SQL 連線
         self.sql_engine = None
@@ -137,14 +138,24 @@ class SQL_Manager:
             raise ValueError("logfileName must be a non-empty string!")
         self._logfileName = value
 
+    # new_data_added_excel 屬性
+    @property
+    def new_data_added_excel(self):
+        return self._new_data_added_excel
+    @new_data_added_excel.setter
+    def new_data_added_excel(self, value):
+        if type(value) != str:
+            raise ValueError("new_data_added_excel must be a string!")
+        self._new_data_added_excel = value
+
     def log_record(self, message:str):
-        with open(self.logfileName, 'a') as file:
-            file.write(f"{message}\n")
+        if self.logfileName != "":
+            with open(self.logfileName, 'a') as file:
+                file.write(f"{message}\n")
 
     def params_checker(self, params, params_type, warning_message:str=""):
-        for each in params:
-            if type(each) != params_type:
-                raise ValueError(f"Type Error: {params} should be {params_type}! {warning_message}")
+        if type(params) != params_type:
+            raise ValueError(f"Type Error: {params} should be {params_type}! {warning_message}")
 
     def SQL_Connect(self, connection_name:str, user_name:str, user_password:str, user_db:str):
         """ 建立 SQL 連線 """
@@ -229,7 +240,7 @@ class SQL_Manager:
         # Check params
         self.params_checker(sql_statements, list, "輸入的 sql_statements 需要是列表形式 list[str]!")
         self.params_checker(effected_trigger, list, "若要指定影響的觸發器, effected_trigger 需要是列表形式 list[str]!")
-        self.params_checker(params, list, "若要指定參數, params 需要是列表形式 list[dict]!", "參數會依照 sql_statements 的順序填入")
+        self.params_checker(params, list, "若要指定參數, params 需要是列表形式 list[dict]!, 參數會依照 sql_statements 的順序填入")
 
         if len(params) == 0:
             print(f" --> [執行查詢] 需要執行 {len(sql_statements)} 行")
@@ -504,12 +515,18 @@ class SQL_Manager:
             new_data[each.column_name] = each.record
         self.Insert_New_Data(added_ids, new_data, column_of_id, effected_trigger=effected_trigger)
 
+        # 從 newData 中搜集新增的資料
+        if self.new_data_added_excel != "":
+            new_data_added = new_data.loc[new_data[column_of_id].isin(added_ids)]
+            new_data_added.to_excel(self.new_data_added_excel, index=False)
+        
     def print_sql_info(self):
         print(f"SQL Table Name: {self.sql_table_name}")
         print(f"SQL Connection Name: {self.sql_connection_name}")
         print(f"User Name: {self.user_name}")
         print(f"User Password: {self.user_password}")
         print(f"User DB: {self.user_db}")
+        print(f"New Data Added Excel: {self.new_data_added_excel}")
         if self.logfileName != "":
             print(f"Log File: {self.logfileName}")
         else:
