@@ -48,7 +48,7 @@ This is a collection of class to handle GCP service functions.
 - `ExecuteProgram.py` 內容如下：
 
 ```python
-from utility.CRL_Manager import CRL_Manager
+from GCP_manager.CRL_Manager import CRL_Manager
 import os
 import base64
 
