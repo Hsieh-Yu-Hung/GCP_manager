@@ -1,5 +1,10 @@
 # GCP_manager
+
 This is a collection of class to handle GCP service functions.
+
+> 特殊符號引發的 SQL bug, 生成 query 字串的時候將特殊符號移除, 目前發現的符號為以下
+>
+> Illegal symbol in query: `':' '%s' '&'`
 
 ## Usage
 
@@ -7,24 +12,24 @@ This is a collection of class to handle GCP service functions.
 
 1. 下載 `GCP_manager` 資料夾, 夾他加入到你的專案中
 
-   ```git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git```
+   ``git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git``
 
-   ```mv GCP_manager /path/to/your-project/```
-
-3. 導入模組
+   ``mv GCP_manager /path/to/your-project/``
+2. 導入模組
 
    ```python
       from GCP_manager.SQL_Manager import SQL_Manager # SQL
       from GCP_manager.GCS_Manager import GCS_Manager # GCS
       from GCP_manager.CRL_Manager import CRL_Manager # Cloud Run
    ```
-
-4. 可以使用模組裡面的功能
+3. 可以使用模組裡面的功能
 
 ## 更新
+
+- 2024-12-17 更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
 - 2024-11-26 更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
 - 2024-11-26 更新 `CRL_Manager.Update_Database()` 現在會輸出新增的資料為 Excel 並上傳 GCS
-- 2024-11-22 更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程 
+- 2024-11-22 更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程
 - 2024-11-12 更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
 
 ## CRL_Manager
@@ -36,15 +41,12 @@ This is a collection of class to handle GCP service functions.
 ### Usage
 
 - 搭配以下 `ExecuteProgram.py` 使用, 可以輸入 shell script 和 configure 檔案 (json)
-
 - 通常是在送 JOB 平台中執行這個 manager, 不會單獨使用。 [說明]()
-
 - 執行 Cloud Job routing 流程：
 
-   1. 下載檔案到 Container 中
-   2. 執行 shell script 和 additional tasks
-   3. 上傳分析結果到 GCS
-
+  1. 下載檔案到 Container 中
+  2. 執行 shell script 和 additional tasks
+  3. 上傳分析結果到 GCS
 - `ExecuteProgram.py` 內容如下：
 
 ```python
@@ -74,15 +76,16 @@ if __name__ == "__main__":
 ```
 
 ## SQL_Manager
+
 This is a small tool for connecting and updating database on Google cloud SQL.
 
 ### Usage
 
 ＊ 帶有 `params` 的 `Execute_SQL_Query()` 範例, 取得查詢結果:
 
-   ```python
+```python
       # 擷取要搜尋的資訊
-      
+    
       # Query
       sql = f"""
         SELECT * FROM {sql_table_name}
@@ -91,7 +94,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
         AND "REF_MD5" = MD5(:ref)
         AND "ALT_MD5" = MD5(:alt)
       """
-      
+    
       # 建立參數字典
       params = {
         'chrom': str(row['CHROM'].replace('chr', '')),
@@ -99,15 +102,15 @@ This is a small tool for connecting and updating database on Google cloud SQL.
         'ref': str(row['REF']),
         'alt': str(row['ALT'])
       }
-      
+    
       res = sql_manager.Execute_SQL_Query(sql_statements=[sql], params=[params])
       column_name = list(res.keys())
-      
+    
       # 取得查詢結果
       result = res.fetchall()
-   ```
+```
 
-1. 建立一個`SQL_Manager`並指定要操作的表格名稱
+1. 建立一個 `SQL_Manager`並指定要操作的表格名稱
    ```python
       sql_manager = SQL_Manager(sql_table_name=TABLE_NAME)
    ```
@@ -183,6 +186,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
    ```
 
 ## GCS_Manager
+
 This is a small tool for downloading files or folders from Google cloud storage.
 
 ### Usage
@@ -191,7 +195,7 @@ This is a small tool for downloading files or folders from Google cloud storage.
 
 ＊本地檔案不用寫絕對路徑, 可以指定的到就好
 
-＊請參考`examples/GCS_example.py`裡面的用法
+＊請參考 `examples/GCS_example.py`裡面的用法
 
 1. 建立一個 `GCS_Manager` 並指定 Bucket, 可以更換
 
@@ -201,30 +205,26 @@ This is a small tool for downloading files or folders from Google cloud storage.
      # 更換 Bucket
      managet.set_bucket(new_bucket_name="Another-bucket")
    ```
-
 2. 使用功能
 
-  - 下載單個檔案
+- 下載單個檔案
 
-    `manager.download_file(remote_file=遠端檔案, local_file=本地檔案)`
+  `manager.download_file(remote_file=遠端檔案, local_file=本地檔案)`
+- 下載整個資料夾
 
-  - 下載整個資料夾
+  `manager.download_folder(remote_folder=遠端資料夾, local_folder=本地資料夾)`
+- 上傳單個檔案
 
-    `manager.download_folder(remote_folder=遠端資料夾, local_folder=本地資料夾)`
+  `manager.upload_file(local_file=本地檔案, remote_file=遠端檔案)`
+- 上傳整個資料夾
 
-  - 上傳單個檔案
-
-    `manager.upload_file(local_file=本地檔案, remote_file=遠端檔案)`
-
-  - 上傳整個資料夾
-
-    `manager.upload_folder(remote_folder=本地資料夾, local_folder=遠端資料夾)`
+  `manager.upload_folder(remote_folder=本地資料夾, local_folder=遠端資料夾)`
 
 3. 使用 gsutil 指令. 當某些狀況之下無法使用 python package, 可以使用 `gsutil cp` 指令, 只要指定 `mode = "command_line"` 即可！
 
-  ```python
+```python
     manager.download_file(remote_file=遠端檔案, local_file=本地檔案, mode="command_line")
     manager.download_folder(remote_folder=遠端資料夾, local_folder=本地資料夾, mode="command_line")
     manager.upload_file(local_file=本地檔案, remote_file=遠端檔案, mode="command_line")
     manager.upload_folder(remote_folder=本地資料夾, local_folder=遠端資料夾, mode="command_line")
-  ```
+```

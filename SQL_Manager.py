@@ -118,6 +118,7 @@ class SQL_Manager:
         self.sql_connection_name = sql_connection_name
         self._logfileName = ""
         self._new_data_added_excel = ""
+        self._illegal_symbols = [':', '&', '%s']
 
         # 嘗試建立 SQL 連線
         self.sql_engine = None
@@ -127,6 +128,15 @@ class SQL_Manager:
             user_password=self.user_password,
             user_db=self.user_db
         )
+
+
+    # 設定非法符號
+    @property
+    def illegal_symbols(self):
+        return self._illegal_symbols
+    @illegal_symbols.setter
+    def illegal_symbols(self, value:list[str]):
+        self._illegal_symbols = value
 
     # logfileName 屬性
     @property
@@ -152,6 +162,11 @@ class SQL_Manager:
         if self.logfileName != "":
             with open(self.logfileName, 'a') as file:
                 file.write(f"{message}\n")
+
+    def remove_illegal_symbols(self, symbols:list[str], value:str, replace_with:str=""):
+        for each in symbols:
+            value = value.replace(each, replace_with)
+        return value
 
     def params_checker(self, params, params_type, warning_message:str=""):
         if type(params) != params_type:
@@ -265,6 +280,7 @@ class SQL_Manager:
             except Exception as e:
                 transaction.rollback()  # 回滾交易
                 print(f"Error executing statement: {e}")
+                raise e
 
         if len(params) == 0:
             print(f" --> [執行查詢] 已成功執行完成")
@@ -435,7 +451,8 @@ class SQL_Manager:
             """ 生成 SQL 更新語句 """
             set_clauses = []
             for update in updated_columns:
-                # 使用雙引號包裹欄位名稱
+                # 使用雙引號包裹欄位名稱, 移除 symbols
+                update.new_value = self.remove_illegal_symbols(self.illegal_symbols, update.new_value, replace_with="-")
                 set_clauses.append(f'"{update.column_name}" = \'{update.new_value}\'')
             set_clause = ", ".join(set_clauses)
             sql = f"UPDATE {table_name} SET {set_clause} WHERE \"{column_of_id}\" = '{target_id}';"
@@ -444,14 +461,16 @@ class SQL_Manager:
             # 加入修改原因
             edit_message = f"已更新:"
             for update in updated_columns:
-                edit_message += f"\n{update.column_name} : {update.old_value} -> {update.new_value};"
+                update.old_value = self.remove_illegal_symbols(self.illegal_symbols, update.old_value, replace_with="-")
+                edit_message += f"\n{update.column_name} 從 {update.old_value} 更新到 {update.new_value};"
             sql += f'UPDATE {table_name} SET "Modify_record" = \'{edit_message}\' WHERE "{column_of_id}" = \'{target_id}\';'
             
             # 回報更新資料
             log_message = f" --> [更新資料] {target_id} 更新了, "
             for update in updated_columns:
-                log_message += f"{update.column_name} : {update.old_value} -> {update.new_value};"
+                log_message += f"{update.column_name} 從 {update.old_value} 更新到 {update.new_value};"
             self.log_record(log_message)   
+
             return sql
 
         # 將 existing_data 和 new_data 的 ID column 轉換成 string
@@ -509,7 +528,7 @@ class SQL_Manager:
         # 綜合所有語句並執行
         all_sql_statements = update_sql_statements + delete_sql_statements
         self.Execute_SQL_Query(all_sql_statements, effected_trigger=effected_trigger)
-
+        
         # 插入新資料, 加入修改資訊
         for each in edit_record:
             new_data[each.column_name] = each.record
