@@ -26,6 +26,7 @@ This is a collection of class to handle GCP service functions.
 
 ## 更新
 
+- 2025-01-09更新 `CRL_Manager` 判斷參數個數改成判斷以 `$數字` 或 `${數字}` 結尾的行, bash script 超過 9 個參數之後要加大括號！
 - 2024-12-17 更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
 - 2024-11-26 更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
 - 2024-11-26 更新 `CRL_Manager.Update_Database()` 現在會輸出新增的資料為 Excel 並上傳 GCS
@@ -85,7 +86,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
 
 ```python
       # 擷取要搜尋的資訊
-    
+  
       # Query
       sql = f"""
         SELECT * FROM {sql_table_name}
@@ -94,7 +95,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
         AND "REF_MD5" = MD5(:ref)
         AND "ALT_MD5" = MD5(:alt)
       """
-    
+  
       # 建立參數字典
       params = {
         'chrom': str(row['CHROM'].replace('chr', '')),
@@ -102,10 +103,10 @@ This is a small tool for connecting and updating database on Google cloud SQL.
         'ref': str(row['REF']),
         'alt': str(row['ALT'])
       }
-    
+  
       res = sql_manager.Execute_SQL_Query(sql_statements=[sql], params=[params])
       column_name = list(res.keys())
-    
+  
       # 取得查詢結果
       result = res.fetchall()
 ```

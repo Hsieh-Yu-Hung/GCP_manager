@@ -97,7 +97,7 @@ class CRL_Manager():
         # 找出有幾個參數(使用正則表達式找出所有以 $數字 結尾的行)
         param_count = 0
         for line in cli_script_content.split('\n'):
-            matches = re.findall(r'\$\d+$', line)
+            matches = re.findall(r'\$\d+$|\${\d+}$', line)
             if matches:
                 param_count = max(param_count, int(matches[0][1:]))
 
