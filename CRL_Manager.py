@@ -99,7 +99,11 @@ class CRL_Manager():
         for line in cli_script_content.split('\n'):
             matches = re.findall(r'\$\d+$|\${\d+}$', line)
             if matches:
-                param_count = max(param_count, int(matches[0][1:]))
+                match_num = matches[0][1:]
+                if '{' in match_num:
+                    match_num = match_num.replace('{', '')
+                    match_num = match_num.replace('}', '')
+                param_count = max(param_count, int(match_num))
 
         # 檢查 CLI 腳本參數數量是否正確
         if param_count != len(self.cli_params):
