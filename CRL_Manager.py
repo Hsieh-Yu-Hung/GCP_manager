@@ -108,10 +108,12 @@ class CRL_Manager():
         # 檢查 CLI 腳本參數數量是否正確
         if param_count != len(self.cli_params):
             raise ValueError(f"CLI 腳本參數數量不正確, 應為 {param_count}, 但提供 {len(self.cli_params)} 個參數")
-        
+
         # 將 CLI 腳本中的參數替換成實際的參數
         for i in range(param_count):
             cli_script_content = cli_script_content.replace(f"${i+1}", self.cli_params[i])
+            if (i+1) > 9:
+                cli_script_content = cli_script_content.replace(f"${{{i+1}}}", self.cli_params[i])
         
         return cli_script_content
         
@@ -154,6 +156,7 @@ class CRL_Manager():
 
         # step2: parse CLI script
         cli_commands = self.parse_cli_script(self.cli_script_content)
+        print(" --> 運行指令: \n", cli_commands)
 
         # step3: execute CLI
         if not self.execute_CLI(cli_commands):
