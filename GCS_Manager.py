@@ -93,6 +93,31 @@ class GCS_Manager:
             os.system(f"gsutil -m cp -r {local_folder} gs://{self.bucket_name}/{remote_folder}")
             print(f" --> [上傳資料夾] \n --> 本地資料夾：{local_folder} \n --> 上傳到：{remote_folder} \n")
 
+    def check_file_exists(self, remote_path):
+        """ 檢查遠端檔案是否存在 """
+        blob = self.bucket.blob(remote_path)
+        return blob.exists()
+
+    def delete_remote_folder(self, remote_folder, mode=_PYTHON):
+        """ 刪除遠端資料夾 """
+        if mode == _PYTHON:
+            for blob in self.bucket.list_blobs(prefix=remote_folder):
+                blob.delete()
+                print(f" --> [刪除檔案] \n --> 遠端檔案：{blob.name} \n")
+        elif mode == _COMMAND_LINE:
+            os.system(f"gsutil rm -r gs://{self.bucket_name}/{remote_folder}")
+            print(f" --> [刪除資料夾] \n --> 遠端資料夾：{remote_folder} \n")
+
+    def delete_remote_file(self, remote_file, mode=_PYTHON):
+        """ 刪除遠端檔案 """
+        if mode == _PYTHON:
+            blob = self.bucket.blob(remote_file)
+            blob.delete()
+            print(f" --> [刪除檔案] \n --> 遠端檔案：{remote_file} \n")
+        elif mode == _COMMAND_LINE:
+            os.system(f"gsutil rm gs://{self.bucket_name}/{remote_file}")
+            print(f" --> [刪除檔案] \n --> 遠端檔案：{remote_file} \n")
+
     def set_bucket(self, new_bucket_name):
         """ 設定成新的 bucket """
         self.bucket_name = new_bucket_name
