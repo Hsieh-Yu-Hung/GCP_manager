@@ -50,8 +50,13 @@ class CRL_Manager():
             4. 執行 crl_manager.process_data(), 依照 config 的設定下載資料 -> 執行 CLI -> 上傳結果
     """
 
-    def __init__(self, job_config_data: str, script_content: str):
+    def __init__(self, job_config_data: str, script_content: str, debug: bool = False):
         """ 建構式 """
+
+        self.debug = debug
+        if self.debug:
+            print(" --> 開啟 debug mode")
+            return
 
         # Parse job config data from JSON string
         job_config_data = json.loads(job_config_data)
@@ -133,18 +138,17 @@ class CRL_Manager():
         try:
             for output_file in output_files:
                 gcs_manager = GCS_Manager(output_file.gcs_bucket)
-
                 # 如果是資料夾, 上傳資料夾
                 if output_file.file_type == FILETYPE.FOLDER:
                     # 檢查 output_file 是否已經存在GCS上 如果存在先把它刪除
-                    if gcs_manager.check_file_exists(output_file.gcs_path+"/"):
+                    if gcs_manager.check_folder_exists(output_file.gcs_path+"/"):
                         gcs_manager.delete_remote_folder(output_file.gcs_path, mode=output_file.transfer_method)
                     gcs_manager.upload_folder(output_file.local_path, output_file.gcs_path, mode=output_file.transfer_method)
                 # 如果是檔案, 上傳檔案
                 elif output_file.file_type == FILETYPE.FILE:
                     # 檢查 output_file 是否已經存在GCS上 如果存在先把它刪除
                     if gcs_manager.check_file_exists(output_file.gcs_path):
-                        gcs_manager.delete_remote_folder(output_file.gcs_path, mode=output_file.transfer_method)
+                        gcs_manager.delete_remote_file(output_file.gcs_path, mode=output_file.transfer_method)
                     gcs_manager.upload_file(output_file.local_path, output_file.gcs_path, mode=output_file.transfer_method)
             return True
         except Exception as e:

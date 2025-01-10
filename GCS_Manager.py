@@ -96,7 +96,15 @@ class GCS_Manager:
     def check_file_exists(self, remote_path):
         """ 檢查遠端檔案是否存在 """
         blob = self.bucket.blob(remote_path)
+        print(f" --> 檢查遠端檔案是否存在: {remote_path}; 檢查結果: {blob.exists()}")
         return blob.exists()
+    
+    def check_folder_exists(self, remote_folder):
+        """ 檢查遠端資料夾是否存在 """
+        blobs = list(self.bucket.list_blobs(prefix=remote_folder))
+        folder_exists = len(blobs) > 0
+        print(f" --> 檢查遠端資料夾是否存在: {remote_folder}; 檢查結果: {folder_exists}")
+        return folder_exists
 
     def delete_remote_folder(self, remote_folder, mode=_PYTHON):
         """ 刪除遠端資料夾 """
