@@ -43,7 +43,7 @@ class GCS_Manager:
             blob.download_to_filename(local_file)
             print(f" --> [下載檔案] \n --> 遠端檔案：{remote_file} \n --> 下載到：{local_file} \n")
         elif mode == _COMMAND_LINE:
-            os.system(f"gsutil cp gs://{self.bucket_name}/{remote_file} {local_file}")
+            os.system(f"gsutil -m cp gs://{self.bucket_name}/{remote_file} {local_file}")
             print(f" --> [下載檔案] \n --> 遠端檔案：{remote_file} \n --> 下載到：{local_file} \n")
 
     def download_folder(self, remote_folder, local_folder, mode=_PYTHON):
@@ -73,7 +73,7 @@ class GCS_Manager:
             blob.upload_from_filename(local_file)
             print(f" --> [上傳檔案] \n --> 本地檔案：{local_file} \n --> 上傳到：{remote_file} \n")
         elif mode == _COMMAND_LINE:
-            os.system(f"gsutil cp {local_file} gs://{self.bucket_name}/{remote_file}")
+            os.system(f"gsutil -m cp {local_file} gs://{self.bucket_name}/{remote_file}")
             print(f" --> [上傳檔案] \n --> 本地檔案：{local_file} \n --> 上傳到：{remote_file} \n")
 
     def upload_folder(self, local_folder, remote_folder, mode=_PYTHON):
@@ -105,7 +105,7 @@ class GCS_Manager:
                 blob.delete()
                 print(f" --> [刪除檔案] \n --> 遠端檔案：{blob.name} \n")
         elif mode == _COMMAND_LINE:
-            os.system(f"gsutil rm -r gs://{self.bucket_name}/{remote_folder}")
+            os.system(f"gsutil -m rm -rf gs://{self.bucket_name}/{remote_folder}")
             print(f" --> [刪除資料夾] \n --> 遠端資料夾：{remote_folder} \n")
 
     def delete_remote_file(self, remote_file, mode=_PYTHON):
@@ -115,7 +115,7 @@ class GCS_Manager:
             blob.delete()
             print(f" --> [刪除檔案] \n --> 遠端檔案：{remote_file} \n")
         elif mode == _COMMAND_LINE:
-            os.system(f"gsutil rm gs://{self.bucket_name}/{remote_file}")
+            os.system(f"gsutil -m rm -f gs://{self.bucket_name}/{remote_file}")
             print(f" --> [刪除檔案] \n --> 遠端檔案：{remote_file} \n")
 
     def set_bucket(self, new_bucket_name):
