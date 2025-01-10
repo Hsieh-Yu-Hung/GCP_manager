@@ -25,8 +25,8 @@ This is a collection of class to handle GCP service functions.
 3. 可以使用模組裡面的功能
 
 ## 更新
-
-- 2025-01-19	更新 `CRL_Manager` 上傳檔案到 GCS 之前先檢查, 存在的話先刪除
+- 2025-01-10   Release v1.0
+- 2025-01-10	更新 `CRL_Manager` 上傳檔案到 GCS 之前先檢查, 存在的話先刪除
 - 2025-01-09	更新 `CRL_Manager` 判斷參數個數改成判斷以 `$數字` 或 `${數字}` 結尾的行, bash script 超過 9 個參數之後要加大括號！
 - 2024-12-17	更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
 - 2024-11-26	更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
