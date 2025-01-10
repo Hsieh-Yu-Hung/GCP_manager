@@ -26,12 +26,13 @@ This is a collection of class to handle GCP service functions.
 
 ## 更新
 
-- 2025-01-09更新 `CRL_Manager` 判斷參數個數改成判斷以 `$數字` 或 `${數字}` 結尾的行, bash script 超過 9 個參數之後要加大括號！
-- 2024-12-17 更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
-- 2024-11-26 更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
-- 2024-11-26 更新 `CRL_Manager.Update_Database()` 現在會輸出新增的資料為 Excel 並上傳 GCS
-- 2024-11-22 更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程
-- 2024-11-12 更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
+- 2025-01-19	更新 `CRL_Manager` 上傳檔案到 GCS 之前先檢查, 存在的話先刪除
+- 2025-01-09	更新 `CRL_Manager` 判斷參數個數改成判斷以 `$數字` 或 `${數字}` 結尾的行, bash script 超過 9 個參數之後要加大括號！
+- 2024-12-17	更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
+- 2024-11-26	更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
+- 2024-11-26	更新 `CRL_Manager.Update_Database()` 現在會輸出新增的資料為 Excel 並上傳 GCS
+- 2024-11-22	更新 `CRL_Manager.process_data()` 可以直接執行 routing 的 Cloud JOB 流程
+- 2024-11-12	更新 `SQL-manager.Execute_SQL_Query()` 現在可以加 params 並且回傳查詢結果
 
 ## CRL_Manager
 

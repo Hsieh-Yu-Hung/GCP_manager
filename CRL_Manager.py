@@ -133,6 +133,12 @@ class CRL_Manager():
         try:
             for output_file in output_files:
                 gcs_manager = GCS_Manager(output_file.gcs_bucket)
+
+                # 檢查 output_file 是否已經存在GCS上
+                if gcs_manager.check_file_exists(output_file.gcs_path):
+                    # 如果存在先把它刪除
+                    gcs_manager.delete_file(output_file.gcs_path)
+
                 # 如果是資料夾, 上傳資料夾
                 if output_file.file_type == FILETYPE.FOLDER:
                     gcs_manager.upload_folder(output_file.local_path, output_file.gcs_path, mode=output_file.transfer_method)
