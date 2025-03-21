@@ -26,7 +26,8 @@ This is a collection of class to handle GCP service functions.
 
 ## 更新
 
-- 2025-01-19	更新 `CRL_Manager` 上傳檔案到 GCS 之前先檢查, 存在的話先刪除
+- 2025-01-10   Release v1.0
+- 2025-01-10	更新 `CRL_Manager` 上傳檔案到 GCS 之前先檢查, 存在的話先刪除
 - 2025-01-09	更新 `CRL_Manager` 判斷參數個數改成判斷以 `$數字` 或 `${數字}` 結尾的行, bash script 超過 9 個參數之後要加大括號！
 - 2024-12-17	更新 `SQL_Manager`  當執行 Execute_SQL_Query() 的時候會將 Query 中的特殊符號移除
 - 2024-11-26	更新 `CRL_Manager` 可以設定輸出 logs 和 excel 檔案 (excel 是新加資料的詳細, log 是更新資料的詳細)
@@ -80,6 +81,12 @@ if __name__ == "__main__":
 ## SQL_Manager
 
 This is a small tool for connecting and updating database on Google cloud SQL.
+
+### 注意事項
+
+* 進行表格更新, 表格欄位名稱不要有空格！ 例如："Variant Name", 建議改成 "Variant_Name"
+* 表格必須先存在於 SQL, 請使用 sql 腳本初始化表格並決定好資料格式, 更新時請嚴格確保表格中每一欄資料格式！
+* 假設一欄資料格式為 INT或 FLOAT 那就不要讓他出現缺失值或是其他不是數字的值, 請先前處理資料在執行更新！
 
 ### Usage
 
