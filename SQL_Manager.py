@@ -445,7 +445,7 @@ class SQL_Manager:
         # 回傳結果
         return added_ids, updated_ids, deleted_ids
 
-    def Generate_Update_SQL_Statements(self, updated_ids, existing_data, new_data, column_of_id:str):
+    def Generate_Update_SQL_Statements(self, updated_ids, existing_data, new_data, column_of_id:str, added_cols:list[str]=[], removed_cols:list[str]=[]):
 
         def Generate_Update_SQL(table_name, updated_columns, target_id):
             """ 生成 SQL 更新語句 """
@@ -483,11 +483,18 @@ class SQL_Manager:
             old_data = existing_data.loc[existing_data[column_of_id] == str(each)]
             t_new_data = new_data.loc[new_data[column_of_id] == str(each)]
 
+            # 決定搜索欄位範圍 如果 added_cols 和 removed_cols 則增減搜索欄位
+            search_columns = old_data.columns.tolist()
+            if len(added_cols) > 0:
+                search_columns.extend(added_cols)
+            if len(removed_cols) > 0:
+                search_columns = [each for each in search_columns if each not in removed_cols]
+
             # 找出不同的欄位
             different_columns = []
-            for column in old_data.columns:
-                old_value = str(old_data[column].values[0]).strip()
-                new_value = str(t_new_data[column].values[0]).strip()
+            for column in search_columns:
+                old_value = str(old_data[column].values[0]).strip() if column in old_data.columns.tolist() else ""
+                new_value = str(t_new_data[column].values[0]).strip() if column in t_new_data.columns.tolist() else ""
                 
                 # 如果舊值和新值不同，則記錄
                 if old_value != new_value:
@@ -515,12 +522,19 @@ class SQL_Manager:
             effected_trigger:list[str]=[], edit_record:list[Edit_Record]=[]
         ):
         """ 從 dataframe 更新資料庫 """
+
+        # 比較新舊 Data 的欄位, 如果有新增則加入, 如果有減少則刪除
+        added_columns = list(set(new_data.columns.tolist()) - set(existing_data.columns.tolist()))
+        removed_columns = list(set(existing_data.columns.tolist()) - set(new_data.columns.tolist()))
+        add_column_sql = [f"ALTER TABLE {self.sql_table_name} ADD COLUMN \"{each}\" TEXT;" for each in added_columns]
+        remove_column_sql = [f"ALTER TABLE {self.sql_table_name} DROP COLUMN \"{each}\";" for each in removed_columns]
+        self.Execute_SQL_Query(add_column_sql + remove_column_sql)
         
         # 比較差異
         added_ids, updated_ids, deleted_ids = self.Compare_Difference(new_data, existing_data, column_of_id, preserved_data)
 
         # 生成更新語句
-        update_sql_statements = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id)
+        update_sql_statements = self.Generate_Update_SQL_Statements(updated_ids, existing_data, new_data, column_of_id, added_cols=added_columns, removed_cols=removed_columns)
 
         # 生成刪除語句
         delete_sql_statements = self.Generate_Delete_SQL_Statements(deleted_ids, column_of_id)
