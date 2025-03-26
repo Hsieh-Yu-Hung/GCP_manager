@@ -1,0 +1,10 @@
+google-cloud
+google-cloud-storage
+google-cloud-bigquery
+pandas
+numpy
+bigframes
+pandas-gbq
+openpyxl
+pandas_gbq
+sqlalchemy
