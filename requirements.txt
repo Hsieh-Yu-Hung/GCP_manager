@@ -8,3 +8,5 @@ pandas-gbq
 openpyxl
 pandas_gbq
 sqlalchemy
+cloud-sql-python-connector
+pg8000
