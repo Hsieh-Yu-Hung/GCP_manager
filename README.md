@@ -121,6 +121,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
 
 1. 建立一個 `SQL_Manager`並指定要操作的表格名稱
    ```python
+      from GCP_manager.SQL_Manager import SQL_Manager
       sql_manager = SQL_Manager(sql_table_name=TABLE_NAME)
    ```
 2. 讀取表格成為 `pandas.dataframe()`
@@ -136,7 +137,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
 4. 對當前表格執行現成的 SQL 腳本
    ```python
       # 先指定要替換到腳本裡面的參數使用 SubstituteObject
-      from utility.SQL_Manager import SubstituteObject
+      from GCP_manager.SQL_Manager import SubstituteObject
       sobj = [
          SubstituteObject("__DRUG_DB__", DRUG_DB_NAME),
          SubstituteObject("__TIRGGER__", TRIGGER_NAME),
