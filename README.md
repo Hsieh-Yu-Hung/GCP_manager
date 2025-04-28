@@ -10,17 +10,25 @@ This is a collection of class to handle GCP service functions.
 
 ＊注意要先取得權限並登入！ 使用 `gcloud auth login`, 容器中使用請參考[這篇](https://github.com/ACCUiNBio/BioDB#container%E4%B8%AD%E7%9A%84%E8%BA%AB%E4%BB%BD%E9%A9%97%E8%AD%89)
 
-1. 下載 `GCP_manager` 資料夾, 夾他加入到你的專案中
+1. 從 Github 安裝 `GCP_manager`, 也可以在 Container 中使用
+- 使用 `pip` 安裝, ⚠️ 環境中要有 `git`
+```bash
+pip install git+https://github.com/Hsieh-Yu-Hung/GCP_manager.git@release-v1.1
+```
+- Container 中使用, ⚠️ 要先安裝 `git`
+```Dockerfile
+# 安裝 git
+RUN apt-get update && apt-get install -y git
 
-   ``git clone git@github.com:Hsieh-Yu-Hung/GCP_manager.git``
-
-   ``mv GCP_manager /path/to/your-project/``
+# 安裝 GCP_manager
+RUN pip install git+https://github.com/Hsieh-Yu-Hung/GCP_manager.git@release-v1.1
+```
 2. 導入模組
 
    ```python
-      from GCP_manager.SQL_Manager import SQL_Manager # SQL
-      from GCP_manager.GCS_Manager import GCS_Manager # GCS
-      from GCP_manager.CRL_Manager import CRL_Manager # Cloud Run
+      from GCP_Manager.SQL_Manager import SQL_Manager # SQL
+      from GCP_Manager.GCS_Manager import GCS_Manager # GCS
+      from GCP_Manager.CRL_Manager import CRL_Manager # Cloud Run
    ```
 3. 可以使用模組裡面的功能
 
@@ -54,7 +62,7 @@ This is a collection of class to handle GCP service functions.
 - `ExecuteProgram.py` 內容如下：
 
 ```python
-from GCP_manager.CRL_Manager import CRL_Manager
+from GCP_Manager.CRL_Manager import CRL_Manager
 import os
 import base64
 
@@ -122,7 +130,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
 
 1. 建立一個 `SQL_Manager`並指定要操作的表格名稱
    ```python
-      from GCP_manager.SQL_Manager import SQL_Manager
+      from GCP_Manager.SQL_Manager import SQL_Manager
       sql_manager = SQL_Manager(sql_table_name=TABLE_NAME)
    ```
 2. 讀取表格成為 `pandas.dataframe()`
@@ -138,7 +146,7 @@ This is a small tool for connecting and updating database on Google cloud SQL.
 4. 對當前表格執行現成的 SQL 腳本
    ```python
       # 先指定要替換到腳本裡面的參數使用 SubstituteObject
-      from GCP_manager.SQL_Manager import SubstituteObject
+      from GCP_Manager.SQL_Manager import SubstituteObject
       sobj = [
          SubstituteObject("__DRUG_DB__", DRUG_DB_NAME),
          SubstituteObject("__TIRGGER__", TRIGGER_NAME),
