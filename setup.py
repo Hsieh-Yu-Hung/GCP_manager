@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='GCP-Manager',
-    version='1.1.0',
+    version='1.1.1',
     author='Hsieh Yu-Hung',
     author_email='yuhunghsieh@accuinbio.com',
     description='Handle GCP tasks like file transfer, SQL query, etc.',
@@ -29,5 +29,5 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    python_requires='>=3.11',
+    python_requires='>=3.8',
 )
