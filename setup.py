@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='GCP-Manager',
-    version='1.1.1',
+    version='1.1.2',
     author='Hsieh Yu-Hung',
     author_email='yuhunghsieh@accuinbio.com',
     description='Handle GCP tasks like file transfer, SQL query, etc.',

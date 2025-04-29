@@ -1,4 +1,4 @@
-from GCP_manager.GCS_Manager import GCS_Manager # type: ignore
+from GCP_Manager.GCS_Manager import GCS_Manager # type: ignore
 from dataclasses import dataclass
 from typing import List
 import json
