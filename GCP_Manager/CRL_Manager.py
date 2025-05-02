@@ -4,6 +4,7 @@ from typing import List
 import json
 import os
 import re
+import subprocess  # 新增 subprocess 模組
 
 @dataclass
 class FILETYPE:
@@ -126,7 +127,14 @@ class CRL_Manager():
         """ 執行 CLI 指令 """
         print(" --> 執行 CLI 指令...")
         try:
-            os.system(cli_commands)
+            # 使用 subprocess.run 執行命令，shell=True 允許執行 shell 命令
+            result = subprocess.run(cli_commands, shell=True, check=False)
+            
+            # 檢查退出碼
+            if result.returncode != 0:
+                print(f"CLI 指令執行失敗，退出碼: {result.returncode}")
+                return False
+                
             return True
         except Exception as e:
             print(f"執行 CLI 指令失敗: {e}")
